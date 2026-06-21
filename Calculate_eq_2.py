@@ -34,7 +34,7 @@ def solve_linear(a, b):
     steps += f"Этап 1: Перенос b в правую часть: {a}x = {-b}\n"
     x = -b / a
     steps += f"Этап 2: Нахождение x = {-b}/{a} = {x:.4f}\n"
-    steps += "Результат: x = {:.4f}\nКомплексных корней нет.".format(x)
+    steps += "Результат: x = {:.4f}\nКомплексных корней нет ".format(x)
     return steps, [x]
 
 
@@ -64,51 +64,64 @@ def solve_quadratic(a, b, c):
 def solve_cubic(a, b, c, d):
     eq_str = format_equation_string([a, b, c, d])
     steps = f"Тип: Кубическое уравнение ({eq_str})\n"
-    steps += "Метод: Формула Кардано.\n"
-    steps += f"Этап 1: Нормировка и замена x = y - b/3a для исключения x².\n"
+    steps += "Метод: Формула Кардано\n"
+    steps += "Этап 1: Нормировка и замена x = y - b/3a для исключения x²\n"
+
+    steps += "Формулы перехода: p = (3ac - b²) / 3a², q = (2b³ - 9abc + 27a²d) / 27a³\n"
     p = (3 * a * c - b ** 2) / (3 * a ** 2)
     q = (2 * b ** 3 - 9 * a * b * c + 27 * a ** 2 * d) / (27 * a ** 3)
-    steps += f"Этап 2: Получены параметры p = {p:.4f}, q = {q:.4f}\n"
+    steps += f"Этап 2: Вычисленные параметры p = {p:.4f}, q = {q:.4f}\n"
+
+    steps += "Формула дискриминанта Кардано: Q = (p/3)³ + (q/2)²\n"
     Q = (p / 3) ** 3 + (q / 2) ** 2
-    steps += f"Этап 3: Нахождение дискриминанта Кардано Q = (p/3)³ + (q/2)² = {Q:.4f}\n"
+    steps += f"Этап 3: Нахождение дискриминанта Q = ({p:.4f}/3)³ + ({q:.4f}/2)² = {Q:.4f}\n"
 
     roots = np.roots([a, b, c, d])
     reals = sorted([r.real for r in roots if abs(r.imag) < 1e-7])
 
-    steps += "Этап 4: Анализ корней.\nДействительные корни:\n"
-    for i, r in enumerate(reals): steps += f"x{i + 1} = {r:.4f}\n"
+    steps += "Этап 4: Анализ корней\n"
+    steps += "Действительные корни:\n"
+    for i, r in enumerate(reals):
+        steps += f"x{i + 1} = {r:.4f}\n"
 
     if len(reals) < 3:
-        steps += f"Оповещение: Найдено {len(reals)} действ. корня. Остальные 2 корня — комплексные."
+        steps += f"Оповещение: Найдено {len(reals)} действительный корень, остальные 2 корня — комплексные "
     else:
-        steps += "Комплексных корней нет."
+        steps += "Комплексных корней нет "
     return steps, reals
 
 
 def solve_quartic(a, b, c, d, e):
     eq_str = format_equation_string([a, b, c, d, e])
     steps = f"Тип: Уравнение 4-й степени ({eq_str})\n"
-    steps += "Метод: Декарта-Эйлера.\n"
-    steps += "Этап 1: Приведение к каноническому виду y⁴ + py² + qy + r = 0.\n"
+    steps += "Метод: Декарта-Эйлера\n"
+    steps += "Этап 1: Приведение к каноническому виду y⁴ + py² + qy + r = 0\n"
 
+    steps += "Формулы параметров: p = (8ac - 3b²) / 8a², q = (b³ - 4abc + 8a²d) / 8a³, r = (-3b⁴ + 256a³e - 64a²bd + 16ab²c) / 256a⁴\n"
     p = (8 * a * c - 3 * b ** 2) / (8 * a ** 2)
     q = (b ** 3 - 4 * a * b * c + 8 * a ** 2 * d) / (8 * a ** 3)
     r = (-3 * b ** 4 + 256 * a ** 3 * e - 64 * a ** 2 * b * d + 16 * a * b ** 2 * c) / (256 * a ** 4)
-    steps += f"Этап 2: Параметры: p={p:.4f}, q={q:.4f}, r={r:.4f}\n"
+    steps += f"Этап 2: Вычисленные параметры p = {p:.4f}, q = {q:.4f}, r = {r:.4f}\n"
 
-    steps += "Этап 3: Составление кубической резольвенты и нахождение ее корней.\n"
-    steps += "Этап 4: Извлечение корней через комбинации значений √z.\n"
+    steps += "Этап 3: Составление кубической резольвенты вида z³ + 2pz² + (p² - 4r)z - q² = 0\n"
+
+    res_coeffs = [1, 2 * p, p ** 2 - 4 * r, -q ** 2]
+    res_str = format_equation_string(res_coeffs).replace('x', 'z')
+
+    steps += f"Полученное уравнение резольвенты: {res_str}\n"
+    steps += "Этап 4: Нахождение корней резольвенты и извлечение корней исходного уравнения через комбинации значений √z\n"
 
     roots = np.roots([a, b, c, d, e])
     reals = sorted([r.real for r in roots if abs(r.imag) < 1e-7])
 
     steps += "Результат (действительные корни):\n"
     if not reals:
-        steps += "Действительных корней нет. Все 4 корня — комплексные."
+        steps += "Действительных корней нет, все 4 корня — комплексные "
     else:
-        for i, r in enumerate(reals): steps += f"x{i + 1} = {r:.4f}\n"
+        for i, r_val in enumerate(reals):
+            steps += f"x{i + 1} = {r_val:.4f}\n"
         if len(reals) < 4:
-            steps += f"Оповещение: Найдено {len(reals)} действ. корня. Остальные являются комплексными."
+            steps += f"Оповещение: Найдено {len(reals)} действительных корня, остальные являются комплексными "
     return steps, reals
 
 
